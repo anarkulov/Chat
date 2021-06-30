@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.interfaces.OnItemClickListener
@@ -14,7 +13,6 @@ import com.erzhan.chatapp.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 
 class ChatAdapter(
     context: Context,
@@ -35,7 +33,7 @@ class ChatAdapter(
     class MyViewHolder(itemView: View, onItemClickListener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val chatNameTextView: TextView = itemView.findViewById(R.id.chatNameTextViewId)
-        private val myTextView: TextView = itemView.findViewById(R.id.myTextViewId)
+        private val myTextView: TextView = itemView.findViewById(R.id.lastMessageTextViewId)
         private var onItemClickListener: OnItemClickListener
 
         init {

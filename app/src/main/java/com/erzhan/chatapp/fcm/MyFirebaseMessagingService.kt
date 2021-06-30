@@ -17,14 +17,13 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    val LOG = "LCM"
+    private val LOG = "LCM"
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         Log.v(LOG, "message: $remoteMessage")
 
         if (remoteMessage.notification != null){
-//            if ()
             sendNotification(remoteMessage.notification?.body, remoteMessage.notification?.title)
         }
     }

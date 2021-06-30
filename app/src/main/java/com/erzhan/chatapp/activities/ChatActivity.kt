@@ -51,59 +51,47 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             val userIds = ArrayList<String>()
             userIds.add(user?.id!!)
             userIds.add(myUserId!!)
-            getChatId(userIds)
-            Log.v("Chat Activity :", "chat is null 1")
-            if (chat == null){
+            if (!chatId(userIds)) {
                 chat = Chat()
+                chat!!.userIds = userIds
+                title = user!!.name
                 Log.v("Chat Activity :", "chat is null 2")
             }
-            chat!!.userIds = userIds
-        }
-
-        initList()
-
-        try {
-            getMessages()
-        } catch (npe: NullPointerException){
-            Log.v("Chat Activity :", "null pointer exeption")
-        }
-
-        if (user != null) {
-            title = user!!.name
         } else {
-            FirebaseFirestore.getInstance().collection("users")
-                .document(chat!!.userIds[0])
-                .get()
-                .addOnSuccessListener { documentSnapshot: DocumentSnapshot ->
-                    user = documentSnapshot.toObject(User::class.java)
-                    title = user!!.name
-                }
+            if (user != null) {
+                getMessages()
+                initList()
+                FirebaseFirestore.getInstance().collection("users")
+                    .document(chat!!.userIds[0])
+                    .get()
+                    .addOnSuccessListener { documentSnapshot: DocumentSnapshot ->
+                        user = documentSnapshot.toObject(User::class.java)
+                        title = user!!.name
+                    }
+            }
         }
     }
 
-    private fun getChatId(userIds: ArrayList<String>) {
+    private fun chatId(userIds: ArrayList<String>): Boolean {
+        var isChat = false
         FirebaseFirestore.getInstance().collection("chats")
             .whereArrayContains("userIds", userIds)
             .get()
             .addOnSuccessListener { snapshots: QuerySnapshot? ->
                 if (snapshots != null) {
                     for (snapshot in snapshots) {
+                        isChat = true
                         chat = snapshot.toObject(Chat::class.java)
                         chat!!.id = snapshot.id
                         Log.v("Chat Activity :", "chaaat - ${chat!!.id}")
                     }
                 }
             }
+        return isChat
     }
 
     private fun initList() {
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
-        messageRecyclerView.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                DividerItemDecoration.VERTICAL
-            )
-        )
         messageAdapter = MessageAdapter(this, messageList, this)
         messageRecyclerView.adapter = messageAdapter
     }
@@ -118,6 +106,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             .collection("chats")
             .document(chat?.id!!)
             .collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, _ ->
                 if (value != null) {
                     for (change: DocumentChange in value.documentChanges) {
@@ -146,6 +135,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                 createChat(text)
             }
         }
+        messageEditText.text.clear()
     }
 
     private fun sendMessage(text: String) {
@@ -162,10 +152,8 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             .collection("messages")
             .add(map)
             .addOnSuccessListener {
-                getMessages()
                 initList()
                 messageAdapter.notifyDataSetChanged()
-                messageEditText.text.clear()
                 Toast.makeText(this, "SendMessage: $text", Toast.LENGTH_LONG).show()
             }
     }
@@ -178,6 +166,8 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             .addOnSuccessListener {
                 chat?.id = it.id
                 sendMessage(text)
+                getMessages()
+                initList()
             }
     }
 }

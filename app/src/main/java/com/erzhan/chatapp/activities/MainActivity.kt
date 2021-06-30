@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         if (myUserId != null) {
             FirebaseFirestore
                 .getInstance()
-                .collection("chats") // orderBy
+                .collection("chats")
                 .whereArrayContains("userIds", myUserId)
                 .addSnapshotListener { value, _ ->
                     if (value != null) {
