@@ -23,7 +23,6 @@ class ProfileActivity : AppCompatActivity() {
         title = "Profile"
 
         nameEditText = findViewById(R.id.nameEditTextId)
-
     }
 
     fun onClickNext(view: View) {

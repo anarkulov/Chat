@@ -33,7 +33,7 @@ class ChatAdapter(
     class MyViewHolder(itemView: View, onItemClickListener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val chatNameTextView: TextView = itemView.findViewById(R.id.chatNameTextViewId)
-        private val myTextView: TextView = itemView.findViewById(R.id.lastMessageTextViewId)
+        private val lastMessageTextView: TextView = itemView.findViewById(R.id.lastMessageTextViewId)
         private var onItemClickListener: OnItemClickListener
 
         init {
@@ -48,18 +48,28 @@ class ChatAdapter(
         fun bind(chat: Chat) {
             val myid = FirebaseAuth.getInstance().uid
             FirebaseFirestore.getInstance().collection("users")
-                .document(chat.userIds[0])
+                .document(getN(chat))
                 .get()
                 .addOnSuccessListener { documentSnapshot: DocumentSnapshot ->
                     val user = documentSnapshot.toObject(User::class.java)
                     if (user != null){
                         chatNameTextView.text = user.name
-                        myTextView.text = myid
+                        lastMessageTextView.text = myid
                     } else {
                         chatNameTextView.text = chat.id
                     }
                 }
         }
+
+        private fun getN(chat: Chat): String {
+            val myid = FirebaseAuth.getInstance().uid
+            var i = 0x
+            while (myid == chat.userIds[i]){
+                i++
+            }
+            return chat.userIds[i]
+        }
+
 
         override fun onClick(v: View) {
             onItemClickListener.onItemClick(adapterPosition)

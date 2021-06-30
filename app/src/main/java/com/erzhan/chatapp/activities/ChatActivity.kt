@@ -55,10 +55,9 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                 chat = Chat()
                 chat!!.userIds = userIds
                 title = user!!.name
-                Log.v("Chat Activity :", "chat is null 2")
             }
         } else {
-            if (user != null) {
+            if (user == null) {
                 getMessages()
                 initList()
                 FirebaseFirestore.getInstance().collection("users")

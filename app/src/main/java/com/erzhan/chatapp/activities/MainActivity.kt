@@ -23,10 +23,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var chatAdapter: ChatAdapter
     private val chatList: ArrayList<Chat> = ArrayList()
 
-//    companion object {
-//        val myUserId: String? = FirebaseAuth.getInstance().uid
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

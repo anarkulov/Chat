@@ -3,13 +3,18 @@ package com.erzhan.chatapp.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.erzhan.chatapp.R
+import com.erzhan.chatapp.models.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import org.w3c.dom.Text
 import java.util.concurrent.TimeUnit
 
 class PhoneActivity : AppCompatActivity() {
@@ -39,18 +44,21 @@ class PhoneActivity : AppCompatActivity() {
 
     fun onClickStart(view: View) {
         val phone: String = phoneEditText.text.toString()
-        val options: PhoneAuthOptions = PhoneAuthOptions
-            .newBuilder(FirebaseAuth.getInstance())
-            .setPhoneNumber(phone)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(this)
-            .setCallbacks(callbacks)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
+        if (!TextUtils.isEmpty(phone)) {
+            val options: PhoneAuthOptions = PhoneAuthOptions
+                .newBuilder(FirebaseAuth.getInstance())
+                .setPhoneNumber(phone)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(this)
+                .setCallbacks(callbacks)
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        } else {
+            Toast.makeText(this, "invalid number", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun signIn(phoneAuthCredential: PhoneAuthCredential) {
-        Log.v("Phone Activity", "yes")
         FirebaseAuth
             .getInstance()
             .signInWithCredential(phoneAuthCredential)
@@ -61,7 +69,11 @@ class PhoneActivity : AppCompatActivity() {
                         "Auth success",
                         Toast.LENGTH_SHORT
                     ).show()
-                    startActivity(Intent(this@PhoneActivity, ProfileActivity::class.java))
+                    if (!hasName()) {
+                        startActivity(Intent(this@PhoneActivity, ProfileActivity::class.java))
+                    } else {
+                        startActivity(Intent(this@PhoneActivity, MainActivity::class.java))
+                    }
                     finish()
                 } else {
                     Toast.makeText(
@@ -71,5 +83,27 @@ class PhoneActivity : AppCompatActivity() {
                     ).show()
                 }
             }
+    }
+
+    private fun hasName(): Boolean {
+        var isTrue = false
+        val myUserId = FirebaseAuth.getInstance().uid
+        if (myUserId != null) {
+            FirebaseFirestore
+                .getInstance()
+                .collection("users")
+                .document(myUserId)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val user: User? = snapshot.toObject(User::class.java)
+                    if (user != null) {
+                        user.id = snapshot.id
+                        if (user.name != "") {
+                            isTrue = true
+                        }
+                    }
+                }
+        }
+        return isTrue
     }
 }

@@ -27,9 +27,9 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:paddingStart="16dp"
-            android:hint="message"
+            android:hint="@string/type_a_message"
             android:background="@color/transparent"
-            android:textColorHint="@color/white"
+            android:textColorHint="@color/grey"
             android:textColor="@color/white"/>
 
         <ImageView

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.interfaces.OnItemClickListener
 import com.erzhan.chatapp.models.User
+import com.google.firebase.auth.FirebaseAuth
 
 class ContactsAdapter(
     context: Context,

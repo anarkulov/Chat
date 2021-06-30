@@ -11,8 +11,12 @@
         android:id="@+id/phoneEditTextId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textColor="@color/white"
         android:layout_margin="16dp"
-        android:hint="number"
+        android:hint="@string/number"
+        android:textColorHint="@color/grey"
+        android:background="@drawable/item_background"
         android:inputType="phone"
         />
 
@@ -21,7 +25,7 @@
         android:layout_height="wrap_content"
         android:onClick="onClickStart"
         android:layout_margin="16dp"
-        android:text="Sign In"
+        android:text="@string/sign_in"
         android:layout_gravity="center"
         />
 </LinearLayout>

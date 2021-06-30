@@ -2,4 +2,9 @@
     <string name="app_name">ChatApp</string>
     <string name="default_notification_channel_id">highChannel</string>
     <string name="contacts_title">Contacts</string>
+    <string name="name">Name</string>
+    <string name="next">next</string>
+    <string name="type_a_message">type a message...</string>
+    <string name="number">number</string>
+    <string name="sign_in">Sign In</string>
 </resources>
