@@ -7,6 +7,8 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import com.erzhan.chatapp.Constants.Companion.NAME_FIELD
+import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,7 +22,7 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-        title = "Profile"
+        title = getString(R.string.profile)
 
         nameEditText = findViewById(R.id.nameEditTextId)
     }
@@ -33,12 +35,12 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         val map = HashMap<String, Any>()
-        map["name"] = name
+        map[NAME_FIELD] = name
         val myUserId = FirebaseAuth.getInstance().uid
         if (myUserId != null) {
             FirebaseFirestore
                 .getInstance()
-                .collection("users")
+                .collection(USERS_PATH)
                 .document(myUserId)
                 .set(map)
                 .addOnCompleteListener { task ->

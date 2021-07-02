@@ -10,6 +10,6 @@
         android:id="@+id/usernameTextViewId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="username" />
+        tools:text="contact name" />
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.models.User
 import com.google.firebase.FirebaseException
@@ -25,7 +26,7 @@ class PhoneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone)
-        title = "Phone"
+        title = getString(R.string.phone)
 
         phoneEditText = findViewById(R.id.phoneEditTextId)
 
@@ -48,7 +49,7 @@ class PhoneActivity : AppCompatActivity() {
             val options: PhoneAuthOptions = PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
                 .setPhoneNumber(phone)
-                .setTimeout(60L, TimeUnit.SECONDS)
+                .setTimeout(10L, TimeUnit.SECONDS)
                 .setActivity(this)
                 .setCallbacks(callbacks)
                 .build()
@@ -61,6 +62,9 @@ class PhoneActivity : AppCompatActivity() {
     private fun signIn(phoneAuthCredential: PhoneAuthCredential) {
         FirebaseAuth
             .getInstance()
+            .firebaseAuthSettings
+            .setAppVerificationDisabledForTesting(true)
+        FirebaseAuth.getInstance()
             .signInWithCredential(phoneAuthCredential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -91,14 +95,14 @@ class PhoneActivity : AppCompatActivity() {
         if (myUserId != null) {
             FirebaseFirestore
                 .getInstance()
-                .collection("users")
+                .collection(USERS_PATH)
                 .document(myUserId)
                 .get()
                 .addOnSuccessListener { snapshot ->
                     val user: User? = snapshot.toObject(User::class.java)
                     if (user != null) {
                         user.id = snapshot.id
-                        if (user.name != "") {
+                        if (!TextUtils.isEmpty(user.name)) {
                             isTrue = true
                         }
                     }

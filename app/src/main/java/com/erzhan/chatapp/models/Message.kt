@@ -5,8 +5,9 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.io.Serializable
 
 class Message : Serializable {
-    var text: String = ""
+    var text: String = "Message"
     var senderId: String = ""
+
     @ServerTimestamp
     var time: Timestamp? = null
 }

@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val LOG = "LCM"
 
+    companion object {
+        var sharedPreferences: SharedPreferences? = null
+
+        var token: String?
+        get() {
+            return sharedPreferences?.getString("token", "")
+        }
+        set(value) {
+            sharedPreferences?.edit()?.putString("token", value)?.apply()
+        }
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         Log.v(LOG, "message: $remoteMessage")
@@ -26,16 +39,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (remoteMessage.notification != null){
             sendNotification(remoteMessage.notification?.body, remoteMessage.notification?.title)
         }
-    }
-
-    override fun onNewToken(token: String) {
-        super.onNewToken(token)
-        Log.v(LOG, "token: $token")
-        sendTokenToServer(token)
-    }
-
-    private fun sendTokenToServer(token: String) {
-//        FirebaseMessaging.getInstance()
     }
 
     private fun sendNotification(body: String?, title: String?) {
@@ -68,4 +71,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
         notificationManager.notify(0, notificationBuilder.build())
     }
+
+    override fun onNewToken(newToken: String) {
+        super.onNewToken(newToken)
+        Log.v(LOG, "newToken: $newToken")
+        token = newToken
+    }
+
+    private fun sendTokenToServer(token: String) {
+//        FirebaseMessaging.getInstance()
+    }
+
 }

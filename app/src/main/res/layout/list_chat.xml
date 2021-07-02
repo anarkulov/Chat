@@ -2,38 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:padding="16dp">
+    android:layout_height="65dp"
+    android:layout_margin="4dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_margin="8dp"
         >
         <TextView
             android:id="@+id/chatNameTextViewId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            tools:text="username" />
+            tools:text="Username" />
 
         <TextView
             android:id="@+id/lastMessageTextViewId"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:textColor="@color/grey"
             android:textSize="14sp"
-            tools:text="last message" />
+            android:maxLength="47"
+            tools:text="Last message" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/messageTimeTextViewId"
-        android:layout_width="match_parent"
+        android:id="@+id/lastMessageTimeTextViewId"
+        android:layout_width="wrap_content"
         android:layout_height="20dp"
+        android:layout_margin="8dp"
         android:gravity="end"
-        android:layout_gravity="center"
         android:textColor="@color/grey"
         android:textSize="14sp"
-        tools:text="time" />
+        tools:text="12:00" />
 
 </LinearLayout>

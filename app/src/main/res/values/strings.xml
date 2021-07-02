@@ -7,4 +7,7 @@
     <string name="type_a_message">type a message...</string>
     <string name="number">number</string>
     <string name="sign_in">Sign In</string>
+    <string name="chats">Chats</string>
+    <string name="phone">Phone</string>
+    <string name="profile">Profile</string>
 </resources>

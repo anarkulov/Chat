@@ -7,6 +7,17 @@
     android:padding="8dp"
     tools:context=".activities.ContactsActivity">
 
+    <ProgressBar
+        android:id="@+id/contactsProgressBarId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/contactsRecyclerViewId"
         android:layout_width="match_parent"
