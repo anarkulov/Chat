@@ -7,8 +7,7 @@ class Constants {
         const val CONTENT_TYPE = "application/json"
         const val BASE_URL = "https://fcm.googleapis.com"
 
-
-        const val TOPIC = "/topics/newMessageTopic"
+        const val TOPIC = "/msg"
         const val CHAT_KEY = "chat"
         const val USER_KEY = "user"
         const val CHATS_PATH = "chats"

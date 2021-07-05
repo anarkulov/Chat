@@ -69,22 +69,24 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     private fun getChats() {
-        FirebaseFirestore
-            .getInstance()
-            .collection(CHATS_PATH)
-            .whereArrayContains(USERS_IDS_FIELD, FirebaseAuth.getInstance().uid!!)
-            .get()
-            .addOnSuccessListener { snapshots ->
-                chatList.clear()
-                for (snapshot: DocumentSnapshot in snapshots) {
-                    val chat: Chat? = snapshot.toObject(Chat::class.java)
-                    if (chat != null) {
-                        chat.id = snapshot.id
-                        chatList.add(chat)
+        FirebaseAuth.getInstance().uid?.let {
+            FirebaseFirestore
+                .getInstance()
+                .collection(CHATS_PATH)
+                .whereArrayContains(USERS_IDS_FIELD, it)
+                .get()
+                .addOnSuccessListener { snapshots ->
+                    chatList.clear()
+                    for (snapshot: DocumentSnapshot in snapshots) {
+                        val chat: Chat? = snapshot.toObject(Chat::class.java)
+                        if (chat != null) {
+                            chat.id = snapshot.id
+                            chatList.add(chat)
+                        }
                     }
+                    chatAdapter.notifyDataSetChanged()
                 }
-                chatAdapter.notifyDataSetChanged()
-            }
+        }
         chatsProgressBar.visibility = GONE
         chatRecyclerView.visibility = VISIBLE
     }

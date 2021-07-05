@@ -1,7 +1,8 @@
-package com.erzhan.chatapp.notification
+package com.erzhan.chatapp.interfaces
 
 import com.erzhan.chatapp.Constants.Companion.CONTENT_TYPE
 import com.erzhan.chatapp.Constants.Companion.SERVER_KEY
+import com.erzhan.chatapp.notification.PushNotification
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body

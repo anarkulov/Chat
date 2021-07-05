@@ -1,6 +1,7 @@
 package com.erzhan.chatapp.notification
 
 import com.erzhan.chatapp.Constants.Companion.BASE_URL
+import com.erzhan.chatapp.interfaces.NotificationAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
