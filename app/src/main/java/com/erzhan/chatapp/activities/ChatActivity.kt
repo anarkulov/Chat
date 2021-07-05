@@ -123,6 +123,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                 chat!!.userIds = userIds
                 Log.v("Chat Activity", "new Chat()")
             }
+        messageProgressBar.visibility = GONE
     }
 
     private fun initList() {
@@ -229,7 +230,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                     Log.v(tag, "response : ${response.errorBody().toString()}")
                 }
             } catch (e: Exception) {
-                Log.v(tag, "exception : ${e.toString()}")
+                Log.v(tag, "exception : $e")
 
             }
         }
