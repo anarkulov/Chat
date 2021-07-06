@@ -64,7 +64,8 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        MyFirebaseMessagingService.sharedPreferences = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        MyFirebaseMessagingService.sharedPreferences =
+            getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
         FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener {
             MyFirebaseMessagingService.token = it.token
@@ -85,10 +86,13 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
 
         if (chat == null) {
             val userIds = ArrayList<String>()
+            chat = Chat()
             userIds.add(user!!.id)
             userIds.add(myUserId)
-            chat = Chat()
+            chat?.userIds = userIds
+            initList()
             setChat(userIds)
+            Log.d(tag, " user ids : $userIds.toString()")
             title = user!!.name
         } else {
             if (user == null) {
@@ -99,7 +103,11 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                     .get()
                     .addOnSuccessListener { documentSnapshot: DocumentSnapshot ->
                         user = documentSnapshot.toObject(User::class.java)
-                        title = user!!.name
+                        if (user?.name == null) {
+                            title = chat?.id
+                        } else {
+                            title = user!!.name
+                        }
                     }
             }
         }
@@ -114,14 +122,10 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             .addOnSuccessListener { snapshots ->
                 for (snapshot: DocumentSnapshot in snapshots) {
                     chat?.id = snapshot.id
-                    initList()
+                    chat?.userIds = userIds
                     getMessages()
-                    Log.v("Chat Activity", "restore Chat()")
+                    Log.d(tag, "restore Chat() userids: $userIds")
                 }
-            }
-            .addOnFailureListener {
-                chat!!.userIds = userIds
-                Log.v("Chat Activity", "new Chat()")
             }
         messageProgressBar.visibility = GONE
     }
@@ -197,10 +201,11 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                 messageAdapter.notifyDataSetChanged()
             }
         PushNotification(
-            NotificationData("Erzhan", text), recipientToken)
+            NotificationData("Erzhan", text), recipientToken
+        )
             .also {
                 sendNotification(it)
-        }
+            }
     }
 
     private fun createChat(text: String) {
@@ -225,12 +230,12 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
             try {
                 val response = RetrofitInstance.api.postNotification(notification)
                 if (response.isSuccessful) {
-                    Log.v(tag, "response : $response")
+                    Log.d(tag, "response : $response")
                 } else {
-                    Log.v(tag, "response : ${response.errorBody().toString()}")
+                    Log.d(tag, "response : ${response.errorBody().toString()}")
                 }
             } catch (e: Exception) {
-                Log.v(tag, "exception : $e")
+                Log.d(tag, "exception : $e")
 
             }
         }

@@ -68,9 +68,8 @@ class MessageAdapter(
                     gravity = Gravity.END
                 }
                 linearLayout.layoutParams = params
+                markMessage.visibility = View.VISIBLE
             }
-
-            markMessage.visibility = View.VISIBLE
         }
 
         override fun onClick(v: View) {

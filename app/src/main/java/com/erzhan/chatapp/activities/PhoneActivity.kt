@@ -44,12 +44,12 @@ class PhoneActivity : AppCompatActivity() {
     }
 
     fun onClickStart(view: View) {
-        val phone: String = phoneEditText.text.toString()
+        val phone: String = phoneEditText.text.toString().trim()
         if (!TextUtils.isEmpty(phone)) {
             val options: PhoneAuthOptions = PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
                 .setPhoneNumber(phone)
-                .setTimeout(10L, TimeUnit.SECONDS)
+                .setTimeout(30L, TimeUnit.SECONDS)
                 .setActivity(this)
                 .setCallbacks(callbacks)
                 .build()
