@@ -8,6 +8,7 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.io.Serializable
 
 class Message : Serializable {
+    var id: String = ""
     var text: String = ""
     var senderId: String = ""
     @PropertyName(IS_READ_FIELD)

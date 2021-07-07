@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
 import com.erzhan.chatapp.R
@@ -21,7 +22,7 @@ import java.util.*
 
 
 class MessageAdapter(
-    context: Context,
+    val context: Context,
     messages: List<Message>,
     onItemCLickListener: OnItemClickListener
 ) : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
@@ -36,7 +37,7 @@ class MessageAdapter(
         this.onItemClickListener = onItemCLickListener
     }
 
-    class MyViewHolder(itemView: View, onItemClickListener: OnItemClickListener) :
+    class MyViewHolder(itemView: View, onItemClickListener: OnItemClickListener, context: Context) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val linearLayout: LinearLayout = itemView.findViewById(R.id.wholeTextView)
         private val messageTextView: TextView = itemView.findViewById(R.id.messageTextViewId)
@@ -46,9 +47,11 @@ class MessageAdapter(
         private val seenMarkMessage: ImageView = itemView.findViewById(R.id.seenImageViewId)
 
         private var onItemClickListener: OnItemClickListener
+        private val context : Context
 
         init {
             this.onItemClickListener = onItemClickListener
+            this.context = context
             itemView.setOnClickListener { v: View ->
                 onClick(
                     v
@@ -70,6 +73,7 @@ class MessageAdapter(
                     gravity = Gravity.END
                 }
                 linearLayout.layoutParams = params
+                linearLayout.background = AppCompatResources.getDrawable(context, R.drawable.message_background)
                 seenMarkMessage.visibility = GONE
                 deliveredMarkMessage.visibility = VISIBLE
                 if (message.isRead){
@@ -87,7 +91,7 @@ class MessageAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = inflater.inflate(R.layout.list_message, parent, false)
 
-        return MyViewHolder(view, onItemClickListener)
+        return MyViewHolder(view, onItemClickListener, context)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {

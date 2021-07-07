@@ -3,7 +3,7 @@
     <string name="default_notification_channel_id">highChannel</string>
     <string name="contacts_title">Contacts</string>
     <string name="name">Name</string>
-    <string name="next">next</string>
+    <string name="next">Done</string>
     <string name="type_a_message">type a message...</string>
     <string name="number">number</string>
     <string name="sign_in">Sign In</string>
@@ -11,4 +11,10 @@
     <string name="phone">Phone</string>
     <string name="profile">Profile</string>
     <string name="time_format">HH:mm</string>
+    <string name="delete_dialog_msg">Are you sure to delete this message?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_chat">Delete chat</string>
+    <string name="logout">Logout</string>
+    <string name="profileEdit">Edit Profile</string>
 </resources>

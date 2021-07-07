@@ -126,11 +126,15 @@ class ChatAdapter(
                     .get()
                     .addOnSuccessListener { snapshots ->
                         if (snapshots != null) {
-                            lastMessageTextView.text = snapshots.last().get(TEXT_FIELD) as String
-                            val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-                            val time = snapshots.last().get(TIMESTAMP_FIELD) as Timestamp?
-                            timeTextView.text = format.format(Date(time?.toDate()!!.time))
-                            setChatTime(chat, time)
+                            try {
+                                lastMessageTextView.text = snapshots.last().get(TEXT_FIELD) as String
+                                val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+                                val time = snapshots.last().get(TIMESTAMP_FIELD) as Timestamp?
+                                timeTextView.text = format.format(Date(time?.toDate()!!.time))
+                                setChatTime(chat, time)
+                            } catch (nse: NoSuchElementException) {
+                                nse.printStackTrace()
+                            }
                         }
                     }
                     .addOnFailureListener {

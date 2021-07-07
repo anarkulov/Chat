@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,14 +14,21 @@ import android.widget.ProgressBar
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.erzhan.chatapp.Constants
 import com.erzhan.chatapp.Constants.Companion.CHAT_KEY
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
 import com.erzhan.chatapp.Constants.Companion.CHAT_TIME_FIELD
+import com.erzhan.chatapp.Constants.Companion.NAME_FIELD
+import com.erzhan.chatapp.Constants.Companion.NAME_KEY
+import com.erzhan.chatapp.Constants.Companion.PHONE_FIELD
+import com.erzhan.chatapp.Constants.Companion.PHONE_KEY
+import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.models.Chat
 import com.erzhan.chatapp.adapters.ChatAdapter
 import com.erzhan.chatapp.fcm.MyFirebaseMessagingService
 import com.erzhan.chatapp.interfaces.OnItemClickListener
+import com.erzhan.chatapp.models.User
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -37,7 +45,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private val chatList: ArrayList<Chat> = ArrayList()
     private lateinit var chatsProgressBar: ProgressBar
     private lateinit var recipientToken: String
-
 
     override fun onStart() {
         super.onStart()
@@ -77,7 +84,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private fun initList() {
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
-        chatRecyclerView.addItemDecoration(DividerItemDecoration(this,DividerItemDecoration.VERTICAL))
+        chatRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         chatAdapter = ChatAdapter(this, chatList, this)
         chatRecyclerView.adapter = chatAdapter
     }
@@ -111,7 +123,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                         }
                     }
             }
-        }catch (npe: NullPointerException){
+        } catch (npe: NullPointerException) {
             npe.printStackTrace()
         }
 
@@ -133,6 +145,27 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             FirebaseAuth.getInstance().signOut()
             onStart()
             return true
+        } else if (item.itemId == R.id.profile) {
+            try {
+                FirebaseAuth.getInstance().uid?.let {
+                    FirebaseFirestore
+                        .getInstance()
+                        .collection(USERS_PATH)
+                        .document(it)
+                        .get()
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val name = task.result?.get(NAME_FIELD).toString()
+                                Log.v("MainActivity", name)
+                                val intent = Intent(this, ProfileActivity::class.java)
+                                intent.putExtra(NAME_KEY, name)
+                                startActivity(intent)
+                            }
+                        }
+                }
+            } catch (npe: NullPointerException) {
+                npe.printStackTrace()
+            }
         }
         return false
     }

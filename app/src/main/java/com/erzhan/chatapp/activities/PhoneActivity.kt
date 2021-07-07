@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import com.erzhan.chatapp.Constants.Companion.PHONE_KEY
 import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.models.User
@@ -22,6 +23,7 @@ class PhoneActivity : AppCompatActivity() {
 
     private lateinit var phoneEditText: EditText
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    private lateinit var phoneNumber: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,7 @@ class PhoneActivity : AppCompatActivity() {
         title = getString(R.string.phone)
 
         phoneEditText = findViewById(R.id.phoneEditTextId)
+        phoneNumber = phoneEditText.text.toString().trim()
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
@@ -44,11 +47,10 @@ class PhoneActivity : AppCompatActivity() {
     }
 
     fun onClickStart(view: View) {
-        val phone: String = phoneEditText.text.toString().trim()
-        if (!TextUtils.isEmpty(phone)) {
+        if (!TextUtils.isEmpty(phoneNumber)) {
             val options: PhoneAuthOptions = PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
-                .setPhoneNumber(phone)
+                .setPhoneNumber(phoneNumber)
                 .setTimeout(30L, TimeUnit.SECONDS)
                 .setActivity(this)
                 .setCallbacks(callbacks)
@@ -75,9 +77,13 @@ class PhoneActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                         if (!hasName()) {
-                            startActivity(Intent(this@PhoneActivity, ProfileActivity::class.java))
+                            val intent = Intent(this@PhoneActivity, ProfileActivity::class.java)
+                            intent.putExtra(PHONE_KEY, phoneNumber)
+                            startActivity(intent)
                         } else {
-                            startActivity(Intent(this@PhoneActivity, MainActivity::class.java))
+                            val intent = Intent(this@PhoneActivity, MainActivity::class.java)
+
+                            startActivity(intent)
                         }
                         finish()
                     } else {

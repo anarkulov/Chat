@@ -3,11 +3,13 @@ package com.erzhan.chatapp.activities
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -159,7 +161,68 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        Toast.makeText(this, "clicked $position", Toast.LENGTH_SHORT).show()
+        createMessageOptionDialog(position)
+    }
+
+    private fun createMessageOptionDialog(messagePosition: Int) {
+        val items = arrayOf(
+            "Delete for everyone",
+            "Edit",
+            "Cancel"
+        )
+
+        val alertDialog = AlertDialog.Builder(this)
+
+        alertDialog.setItems(items) { dialog, which ->
+            when (which) {
+                0 -> {
+                    showDeleteConfirmationDialog(messagePosition)
+                }
+                1 -> {
+                    Log.v(tag, "Edit")
+                }
+                else -> {
+                    dialog?.dismiss()
+                }
+            }
+        }
+        alertDialog.create().show()
+    }
+
+    private fun showDeleteConfirmationDialog(messagePosition: Int) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(R.string.delete_dialog_msg)
+        builder.setPositiveButton(
+            R.string.delete
+        ) { _, _ ->
+            deleteMessage(messageList[messagePosition])
+        }
+        builder.setNegativeButton(
+            R.string.cancel
+        ) { dialog, _ ->
+            dialog?.dismiss()
+        }
+        builder.create().show()
+    }
+
+    private fun deleteMessage(message: Message) {
+        try {
+            FirebaseFirestore
+                .getInstance()
+                .collection(CHATS_PATH)
+                .document(chat!!.id!!)
+                .collection(MESSAGES_PATH)
+                .document(message.id)
+                .delete()
+                .addOnSuccessListener {
+                    Log.d(tag, "message successfully deleted!")
+                }
+                .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+        }catch (npe: NullPointerException){
+            npe.printStackTrace()
+        }
+        messageAdapter.notifyDataSetChanged()
+        getMessages()
     }
 
     private fun getMessages() {
@@ -178,6 +241,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                         for (change: DocumentSnapshot in snapshots) {
                             val message = change.toObject(Message::class.java)
                             if (message != null) {
+                                message.id = change.id
                                 message.text = change.get(TEXT_FIELD) as String
                                 message.senderId = change.get(SENDER_ID_FIELD) as String
                                 message.isRead = change.get(IS_READ_FIELD) as Boolean
@@ -307,4 +371,34 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
                 Log.d(tag, "exception : $e")
             }
         }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.chat_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.delete_chat) {
+            deleteChat()
+            finish()
+            return true
+        }
+        return false
+    }
+
+    private fun deleteChat() {
+        try {
+            FirebaseFirestore
+                .getInstance()
+                .collection(CHATS_PATH)
+                .document(chat!!.id!!)
+                .delete()
+                .addOnSuccessListener {
+                    Log.d(tag, "chat successfully deleted!")
+                }
+                .addOnFailureListener { e -> Log.w(tag, "Error deleting chat", e) }
+        }catch (npe: NullPointerException){
+            npe.printStackTrace()
+        }
+    }
 }
