@@ -60,53 +60,63 @@ class PhoneActivity : AppCompatActivity() {
     }
 
     private fun signIn(phoneAuthCredential: PhoneAuthCredential) {
-        FirebaseAuth
-            .getInstance()
-            .firebaseAuthSettings
-            .setAppVerificationDisabledForTesting(true)
-        FirebaseAuth.getInstance()
-            .signInWithCredential(phoneAuthCredential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this@PhoneActivity,
-                        "Auth success",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    if (!hasName()) {
-                        startActivity(Intent(this@PhoneActivity, ProfileActivity::class.java))
+        try {
+            FirebaseAuth
+                .getInstance()
+                .firebaseAuthSettings
+                .setAppVerificationDisabledForTesting(true)
+            FirebaseAuth.getInstance()
+                .signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(
+                            this@PhoneActivity,
+                            "Auth success",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        if (!hasName()) {
+                            startActivity(Intent(this@PhoneActivity, ProfileActivity::class.java))
+                        } else {
+                            startActivity(Intent(this@PhoneActivity, MainActivity::class.java))
+                        }
+                        finish()
                     } else {
-                        startActivity(Intent(this@PhoneActivity, MainActivity::class.java))
+                        Toast.makeText(
+                            this@PhoneActivity,
+                            "Auth error ${task.exception?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    finish()
-                } else {
-                    Toast.makeText(
-                        this@PhoneActivity,
-                        "Auth error ${task.exception?.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
-            }
+        } catch (npe: NullPointerException) {
+            npe.printStackTrace()
+        }
+
     }
 
     private fun hasName(): Boolean {
         var isTrue = false
         val myUserId = FirebaseAuth.getInstance().uid
         if (myUserId != null) {
-            FirebaseFirestore
-                .getInstance()
-                .collection(USERS_PATH)
-                .document(myUserId)
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    val user: User? = snapshot.toObject(User::class.java)
-                    if (user != null) {
-                        user.id = snapshot.id
-                        if (!TextUtils.isEmpty(user.name)) {
-                            isTrue = true
+            try {
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(USERS_PATH)
+                    .document(myUserId)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        val user: User? = snapshot.toObject(User::class.java)
+                        if (user != null) {
+                            user.id = snapshot.id
+                            if (!TextUtils.isEmpty(user.name)) {
+                                isTrue = true
+                            }
                         }
                     }
-                }
+            } catch (npe: java.lang.NullPointerException) {
+                npe.printStackTrace()
+            }
+
         }
         return isTrue
     }

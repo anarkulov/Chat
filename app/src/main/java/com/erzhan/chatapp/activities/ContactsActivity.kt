@@ -1,5 +1,6 @@
 package com.erzhan.chatapp.activities
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,15 +10,19 @@ import android.widget.ProgressBar
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.erzhan.chatapp.Constants.Companion.TOPIC
 import com.erzhan.chatapp.Constants.Companion.USER_KEY
 import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.adapters.ContactsAdapter
+import com.erzhan.chatapp.fcm.MyFirebaseMessagingService
 import com.erzhan.chatapp.interfaces.OnItemClickListener
 import com.erzhan.chatapp.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
 
 class ContactsActivity : AppCompatActivity(), OnItemClickListener {
 
@@ -25,11 +30,12 @@ class ContactsActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var contactsAdapter: ContactsAdapter
     private val userList: ArrayList<User> = ArrayList()
     private lateinit var contactsProgressBar: ProgressBar
-
+//    private lateinit var recipientToken: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacts)
         title = getString(R.string.contacts_title)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         contactsRecyclerView = findViewById(R.id.contactsRecyclerViewId)
         contactsProgressBar = findViewById(R.id.contactsProgressBarId)
@@ -56,23 +62,28 @@ class ContactsActivity : AppCompatActivity(), OnItemClickListener {
     private fun getContactList() {
         val myUserId = FirebaseAuth.getInstance().uid
 
-        FirebaseFirestore
-            .getInstance()
-            .collection(USERS_PATH)
-            .get()
-            .addOnSuccessListener {snapshots ->
-            userList.clear()
-            for (snapshot: DocumentSnapshot in snapshots){
-                val user: User? = snapshot.toObject(User::class.java)
-                if (user != null) {
-                    if (user.id != myUserId) {
-                        user.id = snapshot.id
-                        userList.add(user)
+        try {
+            FirebaseFirestore
+                .getInstance()
+                .collection(USERS_PATH)
+                .get()
+                .addOnSuccessListener {snapshots ->
+                    userList.clear()
+                    for (snapshot: DocumentSnapshot in snapshots){
+                        val user: User? = snapshot.toObject(User::class.java)
+                        if (user != null) {
+                            if (user.id != myUserId) {
+                                user.id = snapshot.id
+                                userList.add(user)
+                            }
+                        }
                     }
+                    contactsAdapter.notifyDataSetChanged()
                 }
-            }
-            contactsAdapter.notifyDataSetChanged()
+        } catch (npe: NullPointerException){
+            npe.printStackTrace()
         }
+
         contactsRecyclerView.visibility = VISIBLE
         contactsProgressBar.visibility = GONE
     }

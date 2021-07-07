@@ -1,5 +1,6 @@
 package com.erzhan.chatapp.activities
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,13 +15,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.Constants.Companion.CHAT_KEY
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
+import com.erzhan.chatapp.Constants.Companion.CHAT_TIME
 import com.erzhan.chatapp.Constants.Companion.USERS_IDS_FIELD
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.models.Chat
 import com.erzhan.chatapp.adapters.ChatAdapter
+import com.erzhan.chatapp.fcm.MyFirebaseMessagingService
 import com.erzhan.chatapp.interfaces.OnItemClickListener
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.*
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
 
@@ -28,6 +39,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var chatAdapter: ChatAdapter
     private val chatList: ArrayList<Chat> = ArrayList()
     private lateinit var chatsProgressBar: ProgressBar
+    private lateinit var recipientToken: String
+
 
     override fun onStart() {
         super.onStart()
@@ -42,6 +55,16 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         title = getString(R.string.chats)
+
+        val myUserId = FirebaseAuth.getInstance().currentUser?.uid
+        MyFirebaseMessagingService.sharedPreferences =
+            getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+
+        FirebaseMessaging.getInstance().subscribeToTopic("topics/$myUserId")
+        FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener {
+            MyFirebaseMessagingService.token = it.token
+            recipientToken = it.token
+        }
 
         chatRecyclerView = findViewById(R.id.chatRecyclerViewId)
         chatsProgressBar = findViewById(R.id.chatsProgressBarId)
@@ -69,24 +92,32 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     private fun getChats() {
-        FirebaseAuth.getInstance().uid?.let {
-            FirebaseFirestore
-                .getInstance()
-                .collection(CHATS_PATH)
-                .whereArrayContains(USERS_IDS_FIELD, it)
-                .get()
-                .addOnSuccessListener { snapshots ->
-                    chatList.clear()
-                    for (snapshot: DocumentSnapshot in snapshots) {
-                        val chat: Chat? = snapshot.toObject(Chat::class.java)
-                        if (chat != null) {
-                            chat.id = snapshot.id
-                            chatList.add(chat)
+        try {
+            FirebaseAuth.getInstance().uid?.let {
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(CHATS_PATH)
+                    .orderBy(CHAT_TIME, Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener { snapshots ->
+                        if (snapshots != null) {
+                            chatList.clear()
+                            for (snapshot: DocumentSnapshot in snapshots) {
+                                val chat: Chat? = snapshot.toObject(Chat::class.java)
+                                if (chat != null) {
+                                    chat.id = snapshot.id
+                                    chat.time = snapshot.get(CHAT_TIME) as Timestamp
+                                    chatList.add(chat)
+                                }
+                            }
+                            chatAdapter.notifyDataSetChanged()
                         }
                     }
-                    chatAdapter.notifyDataSetChanged()
-                }
+            }
+        }catch (npe: NullPointerException){
+            npe.printStackTrace()
         }
+
         chatsProgressBar.visibility = GONE
         chatRecyclerView.visibility = VISIBLE
     }

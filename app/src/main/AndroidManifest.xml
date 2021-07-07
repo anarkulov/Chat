@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.ChatApp"
         tools:targetApi="m">
-        <activity android:name=".activities.ChatActivity"></activity>
+        <activity android:name=".activities.ChatActivity" />
         <activity android:name=".activities.ContactsActivity" />
         <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.PhoneActivity" />
@@ -29,11 +29,10 @@
         </activity>
         <service
             android:name=".fcm.MyFirebaseMessagingService"
-            android:permission="com.google.android.c2dm.permission.SEND"
-            android:exported="false">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                <action android:name="com.google.android.c2dm.permission.RECEIVE"/>
             </intent-filter>
         </service>
     </application>

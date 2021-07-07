@@ -12,6 +12,7 @@ import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -29,7 +30,7 @@ class ProfileActivity : AppCompatActivity() {
 
     fun onClickNext(view: View) {
         val name = nameEditText.text.toString().trim()
-        if (TextUtils.isEmpty(name)){
+        if (TextUtils.isEmpty(name)) {
             nameEditText.error = "Enter your name"
             return
         }
@@ -38,18 +39,27 @@ class ProfileActivity : AppCompatActivity() {
         map[NAME_FIELD] = name
         val myUserId = FirebaseAuth.getInstance().uid
         if (myUserId != null) {
-            FirebaseFirestore
-                .getInstance()
-                .collection(USERS_PATH)
-                .document(myUserId)
-                .set(map)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        startActivity(Intent(this@ProfileActivity, MainActivity::class.java))
-                    } else {
-                        Toast.makeText(this, "Error ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            try {
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(USERS_PATH)
+                    .document(myUserId)
+                    .set(map)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            startActivity(Intent(this@ProfileActivity, MainActivity::class.java))
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "Error ${task.exception?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
+            } catch (npe: NullPointerException) {
+                npe.printStackTrace()
+            }
+
         }
         finish()
     }
