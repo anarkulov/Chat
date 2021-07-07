@@ -1,19 +1,16 @@
 package com.erzhan.chatapp.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
-import com.erzhan.chatapp.Constants.Companion.CHAT_TIME
+import com.erzhan.chatapp.Constants.Companion.CHAT_TIME_FIELD
 import com.erzhan.chatapp.Constants.Companion.IS_READ_FIELD
 import com.erzhan.chatapp.Constants.Companion.MESSAGES_PATH
 import com.erzhan.chatapp.Constants.Companion.SENDER_ID_FIELD
@@ -85,7 +82,6 @@ class ChatAdapter(
             } catch (npe: NullPointerException) {
                 npe.printStackTrace()
             }
-
         }
 
         private fun setUnreadMessages(chat: Chat) {
@@ -157,7 +153,7 @@ class ChatAdapter(
                     .get()
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            task.result?.reference?.update(CHAT_TIME, time)
+                            task.result?.reference?.update(CHAT_TIME_FIELD, time)
                         }
                     }
             } catch (npe: NullPointerException) {

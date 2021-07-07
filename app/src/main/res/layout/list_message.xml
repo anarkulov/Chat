@@ -43,12 +43,20 @@
                 tools:text="12:00" />
 
             <ImageView
-                android:id="@+id/markImageViewId"
+                android:id="@+id/seenImageViewId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_done"
+                android:src="@drawable/ic_has_seen"
+                android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/deliveredImageViewId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_delivered"
                 android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>

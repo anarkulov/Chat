@@ -1,12 +1,10 @@
 package com.erzhan.chatapp.activities
 
-import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -15,19 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.Constants.Companion.CHAT_KEY
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
-import com.erzhan.chatapp.Constants.Companion.CHAT_TIME
+import com.erzhan.chatapp.Constants.Companion.CHAT_TIME_FIELD
 import com.erzhan.chatapp.Constants.Companion.IS_READ_FIELD
 import com.erzhan.chatapp.Constants.Companion.MESSAGES_PATH
 import com.erzhan.chatapp.Constants.Companion.SENDER_ID_FIELD
 import com.erzhan.chatapp.Constants.Companion.TEXT_FIELD
 import com.erzhan.chatapp.Constants.Companion.TIMESTAMP_FIELD
-import com.erzhan.chatapp.Constants.Companion.TOPIC
 import com.erzhan.chatapp.Constants.Companion.USERS_IDS_FIELD
 import com.erzhan.chatapp.Constants.Companion.USER_KEY
 import com.erzhan.chatapp.Constants.Companion.USERS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.adapters.MessageAdapter
-import com.erzhan.chatapp.fcm.MyFirebaseMessagingService
 import com.erzhan.chatapp.interfaces.NotificationAPI
 import com.erzhan.chatapp.interfaces.OnItemClickListener
 import com.erzhan.chatapp.models.Chat
@@ -36,26 +32,15 @@ import com.erzhan.chatapp.models.User
 import com.erzhan.chatapp.notification.NotificationData
 import com.erzhan.chatapp.notification.PushNotification
 import com.erzhan.chatapp.notification.RetrofitInstance
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.*
-import com.google.firebase.iid.FirebaseInstanceIdReceiver
-import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
-import com.google.firebase.installations.FirebaseInstallations
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.NullPointerException
 import java.util.*
-import java.util.EventListener
 import kotlin.collections.ArrayList
 
 
@@ -290,7 +275,7 @@ class ChatActivity : AppCompatActivity(), OnItemClickListener {
     private fun createChat(text: String) {
         val map = mapOf<String, Any>(
             USERS_IDS_FIELD to chat!!.userIds,
-            CHAT_TIME to Timestamp(Date())
+            CHAT_TIME_FIELD to Timestamp(Date())
         )
 
         try {

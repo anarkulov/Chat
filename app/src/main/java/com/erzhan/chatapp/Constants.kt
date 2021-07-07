@@ -19,6 +19,6 @@ class Constants {
         const val SENDER_ID_FIELD = "senderId"
         const val IS_READ_FIELD = "isRead"
         const val USERS_IDS_FIELD = "userIds"
-        const val CHAT_TIME = "time"
+        const val CHAT_TIME_FIELD = "time"
     }
 }

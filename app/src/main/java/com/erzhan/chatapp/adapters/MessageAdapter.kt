@@ -1,20 +1,21 @@
 package com.erzhan.chatapp.adapters
 
-import android.app.ActionBar
 import android.content.Context
-import android.text.Layout
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.interfaces.OnItemClickListener
 import com.erzhan.chatapp.models.Message
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,7 +42,8 @@ class MessageAdapter(
         private val messageTextView: TextView = itemView.findViewById(R.id.messageTextViewId)
         private val messageTimeTextView : TextView = itemView.findViewById(R.id.messageTimeTextViewId)
 
-        private val markMessage: ImageView = itemView.findViewById(R.id.markImageViewId)
+        private val deliveredMarkMessage: ImageView = itemView.findViewById(R.id.deliveredImageViewId)
+        private val seenMarkMessage: ImageView = itemView.findViewById(R.id.seenImageViewId)
 
         private var onItemClickListener: OnItemClickListener
 
@@ -68,7 +70,12 @@ class MessageAdapter(
                     gravity = Gravity.END
                 }
                 linearLayout.layoutParams = params
-                markMessage.visibility = View.VISIBLE
+                seenMarkMessage.visibility = GONE
+                deliveredMarkMessage.visibility = VISIBLE
+                if (message.isRead){
+                    deliveredMarkMessage.visibility = GONE
+                    seenMarkMessage.visibility = VISIBLE
+                }
             }
         }
 

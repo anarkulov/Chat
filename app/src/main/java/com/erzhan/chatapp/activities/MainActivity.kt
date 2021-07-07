@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.erzhan.chatapp.Constants.Companion.CHAT_KEY
 import com.erzhan.chatapp.Constants.Companion.CHATS_PATH
-import com.erzhan.chatapp.Constants.Companion.CHAT_TIME
-import com.erzhan.chatapp.Constants.Companion.USERS_IDS_FIELD
+import com.erzhan.chatapp.Constants.Companion.CHAT_TIME_FIELD
 import com.erzhan.chatapp.R
 import com.erzhan.chatapp.models.Chat
 import com.erzhan.chatapp.adapters.ChatAdapter
@@ -24,13 +23,11 @@ import com.erzhan.chatapp.fcm.MyFirebaseMessagingService
 import com.erzhan.chatapp.interfaces.OnItemClickListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
-import java.util.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
@@ -97,7 +94,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                 FirebaseFirestore
                     .getInstance()
                     .collection(CHATS_PATH)
-                    .orderBy(CHAT_TIME, Query.Direction.DESCENDING)
+                    .orderBy(CHAT_TIME_FIELD, Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener { snapshots ->
                         if (snapshots != null) {
@@ -106,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                                 val chat: Chat? = snapshot.toObject(Chat::class.java)
                                 if (chat != null) {
                                     chat.id = snapshot.id
-                                    chat.time = snapshot.get(CHAT_TIME) as Timestamp
+                                    chat.time = snapshot.get(CHAT_TIME_FIELD) as Timestamp
                                     chatList.add(chat)
                                 }
                             }
