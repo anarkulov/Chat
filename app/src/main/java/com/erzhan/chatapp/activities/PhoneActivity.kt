@@ -31,7 +31,6 @@ class PhoneActivity : AppCompatActivity() {
         title = getString(R.string.phone)
 
         phoneEditText = findViewById(R.id.phoneEditTextId)
-        phoneNumber = phoneEditText.text.toString().trim()
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
@@ -47,6 +46,7 @@ class PhoneActivity : AppCompatActivity() {
     }
 
     fun onClickStart(view: View) {
+        phoneNumber = phoneEditText.text.toString().trim()
         if (!TextUtils.isEmpty(phoneNumber)) {
             val options: PhoneAuthOptions = PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
@@ -57,7 +57,7 @@ class PhoneActivity : AppCompatActivity() {
                 .build()
             PhoneAuthProvider.verifyPhoneNumber(options)
         } else {
-            Toast.makeText(this, "invalid number", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "invalid number $phoneNumber", Toast.LENGTH_LONG).show()
         }
     }
 

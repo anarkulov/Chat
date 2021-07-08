@@ -21,8 +21,8 @@ import kotlin.collections.HashMap
 
 class ProfileActivity : AppCompatActivity() {
 
-    private lateinit var phoneNumber: String
-    private lateinit var name: String
+    private var phoneNumber: String? = null
+    private var name: String? = null
     private lateinit var nameEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +30,11 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
         title = getString(R.string.profile)
 
-        phoneNumber = intent.getStringExtra(Constants.PHONE_KEY).toString()
-        name = intent.getStringExtra(NAME_KEY).toString()
+        phoneNumber = intent.getStringExtra(Constants.PHONE_KEY)
+        name = intent.getStringExtra(NAME_KEY)
         nameEditText = findViewById(R.id.nameEditTextId)
-        if (!TextUtils.isEmpty(name)){
-            nameEditText.setText(name)
+        if (!TextUtils.isEmpty(name) || name != null){
+            nameEditText.setText(name.toString())
         }
     }
 
@@ -47,7 +47,9 @@ class ProfileActivity : AppCompatActivity() {
 
         val map = HashMap<String, Any>()
         map[NAME_FIELD] = name
-        map[PHONE_FIELD] = phoneNumber
+        if (phoneNumber != null){
+            map[PHONE_FIELD] = phoneNumber!!
+        }
         val myUserId = FirebaseAuth.getInstance().uid
         if (myUserId != null) {
             try {
